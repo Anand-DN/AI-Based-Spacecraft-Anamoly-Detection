@@ -94,30 +94,14 @@ elif page == "Channel Map":
             n_total = len(sub_df)
             st.write(f"**{sub}:** {n_target}/{n_total} target channels")
 
-        st.subheader("Result CSV (merged_data.csv)")
-        merged_csv = PROCESSED_DIR / "merged_data.csv"
-        if merged_csv.exists():
-            df_result = pd.read_csv(merged_csv, nrows=5)
-            df_full = pd.read_csv(merged_csv)
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Rows", f"{len(df_full):,}")
-            col2.metric("Columns", df_full.shape[1])
-            col3.metric("Anomaly Label", f"{df_full['anomaly_label'].sum():,} anomalies ({df_full['anomaly_label'].mean():.2%})")
-            st.write("Sample data (first 5 rows):")
-            st.dataframe(df_result)
-        else:
-            st.warning("merged_data.csv not found. Run pipeline.py first.")
-
-        st.subheader("Extracted CSVs")
-        if CSV_DIR.exists():
-            csv_files = list(CSV_DIR.glob("*.csv"))
-            st.write(f"Extracted: {len(csv_files)} / 42 thermal channels")
-            if csv_files:
-                sample = pd.read_csv(csv_files[0], index_col=0, parse_dates=True, nrows=5)
-                st.write(f"Sample from {csv_files[0].name}:")
-                st.dataframe(sample)
-        else:
-            st.warning("CSV directory not found. Run extract_to_csv.py first.")
+        st.subheader("Data Summary")
+        metrics_path = RESULTS_DIR / "metrics.csv"
+        if metrics_path.exists():
+            df_m = pd.read_csv(metrics_path)
+            st.write(f"**Input channels:** 42 thermal (subsystem_6 / physical_unit_3)")
+            st.write(f"**Rows per channel:** ~1.47M (14 years @ 5-min resample)")
+            st.write(f"**Anomaly ratio in test set:** {df_m.iloc[0]['Recall']:.2%} detected")
+        st.caption("The raw CSVs and merged data are excluded from deployment — run `pipeline.py` locally to regenerate.")
 
 # ─── Results & Analysis ───
 elif page == "Results & Analysis":
