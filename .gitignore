@@ -1,0 +1,6 @@
+data/
+models/
+ESA-Mission1/
+__pycache__/
+*.pyc
+.env
